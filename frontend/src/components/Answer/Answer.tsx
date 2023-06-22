@@ -10,6 +10,8 @@ import { parseAnswer } from "./AnswerParser";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import supersub from 'remark-supersub'
+import { Color16Filled } from "@fluentui/react-icons";
+import MarkdownPreview from '@uiw/react-markdown-preview';
 
 interface Props {
     answer: AskResponse;
@@ -56,13 +58,16 @@ export const Answer = ({
     return (
         <>
             <Stack className={styles.answerContainer}>
-                <Stack.Item grow>
-                    <ReactMarkdown
+                <Stack.Item grow >
+                    <MarkdownPreview source={parsedAnswer.markdownFormatText} className={styles.answerText} linkTarget="_blank" />
+
+                    {/* <ReactMarkdown
                         linkTarget="_blank"
+                        
                         remarkPlugins={[remarkGfm, supersub]}
                         children={parsedAnswer.markdownFormatText}
                         className={styles.answerText}
-                    />
+                    /> */}
                 </Stack.Item>
                 <Stack horizontal className={styles.answerFooter}>
                 {!!parsedAnswer.citations.length && (
@@ -70,6 +75,7 @@ export const Answer = ({
                         <Stack style={{width: "100%"}} >
                             <Stack horizontal horizontalAlign='start' verticalAlign='center'>
                                 <Text
+                                    
                                     className={styles.accordionTitle}
                                     onClick={toggleIsRefAccordionOpen}
                                 >
