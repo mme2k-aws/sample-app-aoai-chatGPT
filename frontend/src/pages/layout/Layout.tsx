@@ -35,19 +35,31 @@ const Layout = () => {
         <div className={styles.layout}>
             <header className={styles.header} role={"banner"}>
                 <div className={styles.headerContainer}>
-                    <Stack horizontal verticalAlign="center">
-                        <img
-                            src={Azure}
-                            className={styles.headerIcon}
-                            aria-hidden="true"
-                        />
-                        {/* <Link to="/" className={styles.headerTitleContainer}>
-                            <h3 className={styles.headerTitle}>Azure AI</h3>
-                        </Link>
+                    <Stack horizontal verticalAlign="center" style={{width: "100%"}} className="{styles.headerStack}">
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <img
+                                        src={Azure}
+                                        className={styles.headerIcon}
+                                        aria-hidden="true"
+                                    />
+                                </td>
+                                <td>
+                                    &nbsp;
+                                </td>
+                                <td align="right">
+                                    <h3 className={styles.headerTitle2}>ChatBNT @ BioNData<br/>INTERNAL PREVIEW</h3>
+                                </td>
+                            </tr>
+                        </table>
+                        
+                        {/* 
                         <div className={styles.shareButtonContainer} role="button" tabIndex={0} aria-label="Share" onClick={handleShareClick} onKeyDown={e => e.key === "Enter" || e.key === " " ? handleShareClick() : null}>
                             <ShareRegular className={styles.shareButton} />
                             <span className={styles.shareButtonText}>Share</span>
-                        </div> */}
+                        </div> 
+                        */}
                     </Stack>
                 </div>
             </header>

@@ -8,6 +8,10 @@
     background-color: #005a64;
 }
 
+.headerStack {
+    width: 100% !important;
+}
+
 .headerContainer {
     display: flex;
     justify-content: left;
@@ -32,6 +36,17 @@
     color: #005a64;
 }
 
+.headerTitle2 {
+    font-family: "Segoe UI";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    width: 200px;
+    margin-right: 36px;
+    color: #FFFFFF;
+}
+
 .headerIcon {
     height: 64px;
     width: 200px;
@@ -48,7 +63,7 @@
     gap: 4px;
     width: 86px;
     height: 32px;
-    background: radial-gradient(109.81% 107.82% at 100.1% 90.19%, #005a64 33.63%, #005a64 70.31%, #8DDDD8 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
+    background: radial-gradient(109.81% 107.82% at 100.1% 90.19%, #337b83 33.63%, #005a64 70.31%, #669ca2 100%) /* warning: gradient uses a rotation that is not supported by CSS and may not behave as expected */;
     border-radius: 4px;
     flex: none;
     order: 1;
