@@ -41,6 +41,8 @@ AZURE_OPENAI_PREVIEW_API_VERSION = os.environ.get("AZURE_OPENAI_PREVIEW_API_VERS
 AZURE_OPENAI_STREAM = os.environ.get("AZURE_OPENAI_STREAM", "true")
 AZURE_OPENAI_MODEL_NAME = os.environ.get("AZURE_OPENAI_MODEL_NAME", "gpt-35-turbo") # Name of the model, e.g. 'gpt-35-turbo' or 'gpt-4'
 
+BNT_OPENAI_HUB = "http://127.0.0.1:8000"
+
 SHOULD_STREAM = True if AZURE_OPENAI_STREAM.lower() == "true" else False
 
 def is_chat_model():
@@ -116,11 +118,20 @@ def stream_with_data(body, headers, endpoint):
     }
     try:
         with s.post(endpoint, json=body, headers=headers, stream=True) as r:
+
+            logging.warning(f"r: {r}")
+
             for line in r.iter_lines(chunk_size=10):
+                logging.warning(f"line: {line}")
+
                 if line:
                     lineJson = json.loads(line.lstrip(b'data:').decode('utf-8'))
+                    logging.warning(f"lineJson: {lineJson}")
                     if 'error' in lineJson:
-                        yield json.dumps(lineJson).replace("\n", "\\n") + "\n"
+                        ly = json.dumps(lineJson).replace("\n", "\\n") + "\n"
+                        logging.warning(f"error: {ly}")
+                        yield ly
+                    
                     response["id"] = lineJson["id"]
                     response["model"] = lineJson["model"]
                     response["created"] = lineJson["created"]
@@ -141,6 +152,7 @@ def stream_with_data(body, headers, endpoint):
 
                     yield json.dumps(response).replace("\n", "\\n") + "\n"
     except Exception as e:
+        logging.warning(f"Exception: {e}")        
         yield json.dumps({"error": str(e)}).replace("\n", "\\n") + "\n"
 
 
@@ -233,9 +245,48 @@ def conversation_without_data(request):
         else:
             return Response(None, mimetype='text/event-stream')
 
+def prepare_body_headers_openai_hub(request):
+    request_messages = request.json["messages"]
+
+    body = {
+        "messages":     request_messages,
+        "temperature":  float(AZURE_OPENAI_TEMPERATURE),
+        "max_tokens":   int(AZURE_OPENAI_MAX_TOKENS),
+        "top_p":        float(AZURE_OPENAI_TOP_P),
+        "stop":         AZURE_OPENAI_STOP_SEQUENCE.split("|") if AZURE_OPENAI_STOP_SEQUENCE else None,
+        "stream":       SHOULD_STREAM
+    }
+
+    headers = {
+        'Content-Type': 'application/json',
+    }
+
+    return body, headers
+
+def conversation_with_openai_hub(request):
+    body, headers = prepare_body_headers_openai_hub(request)
+    
+    endpoint = f"{BNT_OPENAI_HUB}/chat/completions"
+    
+    if not SHOULD_STREAM:
+        r = requests.post(endpoint, headers=headers, json=body)
+        status_code = r.status_code
+        r = r.json()
+        logging.warning(f"r: {r} status_code: {status_code}")
+        return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
+    else:
+        if request.method == "POST":
+            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+        else:
+            return Response(None, mimetype='text/event-stream')
+
 @app.route("/conversation", methods=["GET", "POST"])
 def conversation():
     try:
+        if BNT_OPENAI_HUB is not None:
+            logging.warning(f"Start BNT OpenAI Hub conversation")
+            logging.warning(f"request: {request.get_json()}")
+            return conversation_with_openai_hub(request)
         use_data = should_use_data()
         if use_data:
             return conversation_with_data(request)
