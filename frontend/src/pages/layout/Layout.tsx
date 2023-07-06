@@ -45,8 +45,10 @@ const Layout = () => {
                                         aria-hidden="true"
                                     />
                                 </td>
-                                <td>
-                                    &nbsp;
+                                <td align="center">
+                                    <h3 className={styles.headerTitle2} style={{textAlign: "center"}}>
+                                        Who does What at BioNTech?<br/>PoC Unit Descriptions
+                                    </h3>
                                 </td>
                                 <td align="right">
                                     <h3 className={styles.headerTitle2}>ChatBNT @ BioNData<br/>INTERNAL PREVIEW</h3>
