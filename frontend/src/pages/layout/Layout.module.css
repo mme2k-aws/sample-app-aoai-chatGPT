@@ -36,7 +36,7 @@
     color: #005a64;
 }
 
-.headerTitle2 {
+.headerTitleRight {
     font-family: "Segoe UI";
     font-style: normal;
     font-weight: 600;
@@ -44,6 +44,16 @@
     line-height: 28px;
     width: 200px;
     margin-right: 36px;
+    color: #FFFFFF;
+}
+
+.headerTitleMiddle {
+    font-family: "Segoe UI";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 28px;
+    align-content: center; 
     color: #FFFFFF;
 }
 
