@@ -49,7 +49,7 @@ const Layout = () => {
                                     &nbsp;
                                 </td>
                                 <td align="right">
-                                    <h3 className={styles.headerTitle2}>ChatBNT @ BioNData<br/>INTERNAL PREVIEW</h3>
+                                    <h3 className={styles.headerTitleRight}>ChatBNT @ BioNData<br/>INTERNAL PREVIEW</h3>
                                 </td>
                             </tr>
                         </table>

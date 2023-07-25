@@ -32,7 +32,7 @@ AZURE_SEARCH_URL_COLUMN = os.environ.get("AZURE_SEARCH_URL_COLUMN")
 AZURE_OPENAI_RESOURCE = os.environ.get("AZURE_OPENAI_RESOURCE")
 AZURE_OPENAI_MODEL = os.environ.get("AZURE_OPENAI_MODEL")
 AZURE_OPENAI_KEY = os.environ.get("AZURE_OPENAI_KEY")
-AZURE_OPENAI_TEMPERATURE = os.environ.get("AZURE_OPENAI_TEMPERATURE", 0)
+AZURE_OPENAI_TEMPERATURE = os.environ.get("AZURE_OPENAI_TEMPERATURE", 0.7)
 AZURE_OPENAI_TOP_P = os.environ.get("AZURE_OPENAI_TOP_P", 1.0)
 AZURE_OPENAI_MAX_TOKENS = os.environ.get("AZURE_OPENAI_MAX_TOKENS", 1000)
 AZURE_OPENAI_STOP_SEQUENCE = os.environ.get("AZURE_OPENAI_STOP_SEQUENCE")
@@ -245,6 +245,52 @@ def conversation_without_data(request):
         else:
             return Response(None, mimetype='text/event-stream')
 
+
+def stream_with_data_openai_hub(body, headers, endpoint):
+    s = requests.Session()
+    response = {
+        "id": "",
+        "model": "",
+        "created": 0,
+        "object": "",
+        "choices": [{
+            "messages": []
+        }]
+    }
+    try:
+        with s.post(endpoint, json=body, headers=headers, stream=True) as r:
+            #json.loads(r.content.decode('utf-8'))
+            logging.warning(f"RESPONSE: {r}")
+
+            response["choices"][0]["messages"].append({
+                "role": "assistant",
+                "content": ""
+            })
+            for line in r.iter_lines(chunk_size=10):
+                logging.warning(f"line: {line}")
+
+                if line:
+                    lineJson = line.lstrip(b'data:').decode('utf-8')
+                    # remove the first character
+                    lineJson = lineJson[1:]
+                    logging.warning(f"lineJson: {lineJson}")
+                    if 'error' in lineJson:
+                        ly = json.dumps(lineJson).replace("\n", "\\n") + "\n"
+                        logging.warning(f"error: {ly}")
+                        yield ly
+
+                    deltaText = lineJson
+                    if deltaText != "[DONE]":
+                        response["choices"][0]["messages"][0]["content"] += deltaText
+                    
+                    yield json.dumps(response).replace("\n", "\\n") + "\n"
+                else:
+                    response["choices"][0]["messages"][0]["content"] += "\n"
+    except Exception as e:
+        logging.warning(f"Exception: {e}")        
+        yield json.dumps({"error": str(e)}).replace("\n", "\\n") + "\n"
+
+
 def prepare_body_headers_openai_hub(request):
     request_messages = request.json["messages"]
 
@@ -266,17 +312,29 @@ def prepare_body_headers_openai_hub(request):
 def conversation_with_openai_hub(request):
     body, headers = prepare_body_headers_openai_hub(request)
     
-    endpoint = f"{BNT_OPENAI_HUB}/chat/completions"
-    
     if not SHOULD_STREAM:
-        r = requests.post(endpoint, headers=headers, json=body)
+        r = requests.post(f"{BNT_OPENAI_HUB}/direct", headers=headers, json=body)
         status_code = r.status_code
-        r = r.json()
-        logging.warning(f"r: {r} status_code: {status_code}")
-        return Response(json.dumps(r).replace("\n", "\\n"), status=status_code)
+        logging.warning(f"RESPONSE: {json.loads(r.content.decode('utf-8'))} status_code: {status_code}")
+        response = {
+            "id": "",
+            "model": "",
+            "created": 0,
+            "object": "",
+            "choices": [{
+                "messages": [                    
+                    {
+                        "role": "assistant",
+                        "content": json.loads(r.content.decode('utf-8'))
+                    }                  
+                ]
+            }]
+        }
+
+        return Response(json.dumps(response), status=status_code)
     else:
         if request.method == "POST":
-            return Response(stream_with_data(body, headers, endpoint), mimetype='text/event-stream')
+            return Response(stream_with_data_openai_hub(body, headers, f"{BNT_OPENAI_HUB}/stream"), mimetype='text/event-stream')
         else:
             return Response(None, mimetype='text/event-stream')
 
@@ -285,7 +343,6 @@ def conversation():
     try:
         if BNT_OPENAI_HUB is not None:
             logging.warning(f"Start BNT OpenAI Hub conversation")
-            logging.warning(f"request: {request.get_json()}")
             return conversation_with_openai_hub(request)
         use_data = should_use_data()
         if use_data:
