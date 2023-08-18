@@ -49,7 +49,10 @@ const Layout = () => {
                                     &nbsp;
                                 </td>
                                 <td align="right">
-                                    <h3 className={styles.headerTitle2}>ChatBNT @ BioNData<br/>INTERNAL PREVIEW</h3>
+                                    <div className={styles.headerTitlePoweredBy}>
+                                        <div className={styles.headerTitleChatBNT}>ChatBNT</div>
+                                        CCoE and BioNData
+                                    </div>
                                 </td>
                             </tr>
                         </table>
@@ -99,9 +102,10 @@ const Layout = () => {
                     >
                         <CopyRegular className={styles.copyButton} />
                         <span className={styles.copyButtonText}>{copyText}</span>
-                    </div>
-                </Stack>
+                    </div>                    
+                </Stack>                
             </Dialog>
+            <div className={styles.dismissRegular}>DISCLAIMER: Please avoid entering personal and secret business information.</div>            
         </div>
     );
 };

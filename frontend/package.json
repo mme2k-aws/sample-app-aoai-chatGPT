@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "set VITE_SERVER_FORCE_IPV4=1 && vite --config vite.config.ts --port 3000",
     "build": "tsc && vite build",
     "watch": "tsc && vite build --watch"
   },

@@ -36,7 +36,7 @@
     color: #005a64;
 }
 
-.headerTitle2 {
+.headerTitleChatBNT {
     font-family: "Segoe UI";
     font-style: normal;
     font-weight: 600;
@@ -45,6 +45,30 @@
     width: 200px;
     margin-right: 36px;
     color: #FFFFFF;
+}
+
+.headerTitlePoweredBy {
+    font-family: "Segoe UI";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 28px;
+    width: 200px;
+    margin-right: 36px;
+    color: #FFFFFF;
+}
+
+.dismissRegular {
+    font-family: "Segoe UI";
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    width: 100%;
+    margin-left: 36px;
+    margin-right: 36px;
+    margin-bottom: 5px;
+    color: #FFFFFF;
+    align-items: center;
 }
 
 .headerIcon {
