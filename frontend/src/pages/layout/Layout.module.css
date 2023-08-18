@@ -64,9 +64,9 @@
     font-weight: 600;
     font-size: 12px;
     width: 100%;
-    margin-left: 36px;
-    margin-right: 36px;
-    margin-bottom: 5px;
+    padding-left: 36px;
+    padding-right: 36px;
+    padding-bottom: 5px;
     color: #FFFFFF;
     align-items: center;
 }
