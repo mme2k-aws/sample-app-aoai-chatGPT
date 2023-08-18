@@ -121,7 +121,7 @@ const Chat = () => {
     useEffect(() => chatMessageStreamEnd.current?.scrollIntoView({ behavior: "smooth" }), [showLoadingMessage]);
 
     const onShowCitation = (citation: Citation) => {
-        setActiveCitation([citation.content, citation.id, citation.title ?? "", citation.filepath ?? "", "", ""]);
+        setActiveCitation([citation.content, citation.id, citation.title ?? "", citation.filepath ?? "", citation.url ?? "", ""]);
         setIsCitationPanelOpen(true);
     };
 
@@ -254,6 +254,9 @@ const Chat = () => {
                             remarkPlugins={[remarkGfm]} 
                             rehypePlugins={[rehypeRaw]}
                         />
+                        <a href={activeCitation[4]} target="_blank" className={styles.citationPanelLink}>
+                            {activeCitation[4]}
+                        </a>
                     </Stack.Item>
                 )}
                 </Stack>
